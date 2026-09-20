@@ -94,8 +94,26 @@ timer_sleep (int64_t ticks)
   int64_t start = timer_ticks ();
 
   ASSERT (intr_get_level () == INTR_ON);
-  while (timer_elapsed (start) < ticks) 
-    thread_yield ();
+  if (ticks <= 0){
+    return ;
+  }
+
+  //desativa as interrupçoes 
+  enum nivel_inicial nivel_final = intr_disable();
+
+  //alarme para despertar quando atingir 
+  struct thread*cur = thread_current();
+  cur -> tick_acordada = timer_ticks() + ticks;
+
+  //insere na lista na lista de threads adormecidas
+  list_push_back (&sleep_list, &cur->elem);
+
+  //bloqueia a thread 
+  thread_block();
+
+  //restaura o estado inicial
+  intr_set_level(nivel_final);
+
 }
 
 /* Sleeps for approximately MS milliseconds.  Interrupts must be
