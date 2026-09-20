@@ -99,7 +99,7 @@ timer_sleep (int64_t ticks)
   }
 
   //desativa as interrupçoes 
-  enum nivel_inicial nivel_final = intr_disable();
+  enum intr_level old_level = intr_disable();
 
   //alarme para despertar quando atingir 
   struct thread*cur = thread_current();
@@ -112,7 +112,7 @@ timer_sleep (int64_t ticks)
   thread_block();
 
   //restaura o estado inicial
-  intr_set_level(nivel_final);
+  intr_set_level(old_level);
 
 }
 
