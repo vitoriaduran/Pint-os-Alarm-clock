@@ -186,12 +186,25 @@ timer_print_stats (void)
   printf ("Timer: %"PRId64" ticks\n", timer_ticks ());
 }
 
-/* Timer interrupt handler. */
+
+//o SO checa a lista em todo tick do relogio e quando o tempo atinge o valor X, ela acorda a thread
 static void
 timer_interrupt (struct intr_frame *args UNUSED)
 {
   ticks++;
   thread_tick ();
+
+  struct list_elem *e = list_begin (&sleep_list);
+  while (e != list_end (&sleep_list)){
+      struct thread *t = list_entry (e, struct thread, elem);
+      if (ticks >= t->tick_acordada){
+    
+          e = list_remove (e);
+          thread_unblock (t);
+      }
+      e = list_next (e);
+        
+    }
 }
 
 /* Returns true if LOOPS iterations waits for more than one timer
