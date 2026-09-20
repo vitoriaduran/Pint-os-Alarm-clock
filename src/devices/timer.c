@@ -91,12 +91,11 @@ timer_elapsed (int64_t then)
 void
 timer_sleep (int64_t ticks) 
 {
-  int64_t start = timer_ticks ();
-
-  ASSERT (intr_get_level () == INTR_ON);
   if (ticks <= 0){
     return ;
   }
+
+  ASSERT (intr_get_level () == INTR_ON);
 
   //desativa as interrupçoes 
   enum intr_level old_level = intr_disable();
@@ -106,7 +105,7 @@ timer_sleep (int64_t ticks)
   cur -> tick_acordada = timer_ticks() + ticks;
 
   //insere na lista na lista de threads adormecidas
-  list_push_back (&sleep_list, &cur->elem);
+  list_push_back (&sleep_list, &cur->sleep_elem);
 
   //bloqueia a thread 
   thread_block();
@@ -196,13 +195,15 @@ timer_interrupt (struct intr_frame *args UNUSED)
 
   struct list_elem *e = list_begin (&sleep_list);
   while (e != list_end (&sleep_list)){
-      struct thread *t = list_entry (e, struct thread, elem);
+      struct thread *t = list_entry (e, struct thread, sleep_elem);
       if (ticks >= t->tick_acordada){
     
           e = list_remove (e);
           thread_unblock (t);
       }
-      e = list_next (e);
+      else{
+        e = list_next (e);
+      }
         
     }
 }

@@ -93,6 +93,8 @@ struct thread
     /* Shared between thread.c and synch.c. */
     struct list_elem elem;              /* List element. */
 
+    struct list_elem sleep_elem;
+
     //tick em que deve acordar
     int64_t tick_acordada; 
 #ifdef USERPROG

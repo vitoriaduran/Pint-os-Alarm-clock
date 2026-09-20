@@ -625,15 +625,17 @@ sub print_bochs_disk_line {
 # Runs QEMU.
 sub run_qemu {
   print "warning: qemu doesn't support --terminal\n"
-  if $vga eq 'terminal';
+    if $vga eq 'terminal';
   print "warning: qemu doesn't support jitter\n"
-  if defined $jitter;
+    if defined $jitter;
   my (@cmd) = ('qemu-system-i386');
+  push (@cmd, '-cpu', 'max');
+  push (@cmd, '-no-reboot');
   push (@cmd, '-device', 'isa-debug-exit');
-  push (@cmd, '-drive', 'format=raw,media=disk,index=0,file=' . $disks[0]) if defined $disks[0];
-  push (@cmd, '-drive', 'format=raw,media=disk,index=1,file=' . $disks[1]) if defined $disks[1];
-  push (@cmd, '-drive', 'format=raw,media=disk,index=2,file=' . $disks[2]) if defined $disks[2];
-  push (@cmd, '-drive', 'format=raw,media=disk,index=3,file=' . $disks[3]) if defined $disks[3];
+  push (@cmd, '-drive', 'file=' . $disks[0] . ',format=raw,index=0,media=disk,if=ide') if defined $disks[0];
+  push (@cmd, '-drive', 'file=' . $disks[1] . ',format=raw,index=1,media=disk,if=ide') if defined $disks[1];
+  push (@cmd, '-drive', 'file=' . $disks[2] . ',format=raw,index=2,media=disk,if=ide') if defined $disks[2];
+  push (@cmd, '-drive', 'file=' . $disks[3] . ',format=raw,index=3,media=disk,if=ide') if defined $disks[3];
   push (@cmd, '-m', $mem);
   push (@cmd, '-net', 'none');
   push (@cmd, '-nographic') if $vga eq 'none';
