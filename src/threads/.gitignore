@@ -1,3 +1,11 @@
-build
+cat << 'EOF' > .gitignore
+**/build/
+*.o
+*.bin
+*.d
+*.log
+.vscode/
+build/
 bochsrc.txt
 bochsout.txt
+EOF
